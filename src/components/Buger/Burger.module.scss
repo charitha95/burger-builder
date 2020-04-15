@@ -1,0 +1,29 @@
+.Buger {
+    width: 100%;
+    margin: auto;
+    height: 250px;
+    overflow: auto;
+    text-align: center;
+    font-size: 1.2rem;
+}
+
+@media (min-width: 1000px) and  (min-width: 700px) {
+    .Buger {
+        width: 700px;
+        height: 600px;
+    }
+}
+
+@media (min-width: 500px) and  (min-width: 401px) {
+    .Buger {
+        width: 450px;
+        height: 400px;
+    }
+}
+
+@media (min-width: 500px) and  (min-width: 400px) {
+    .Buger {
+        width: 350px;
+        height: 300px;
+    }
+}
