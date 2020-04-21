@@ -1,7 +1,7 @@
 import React from 'react';
 import './App.module.scss';
-import Layout from './components/Layout/Layout';
 import BugerBuilder from './containers/BurgerBuilder/BugerBuilder';
+import Layout from './containers/Layout/Layout';
 
 function App() {
   return (

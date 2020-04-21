@@ -4,6 +4,9 @@ import Burger from '../../components/Buger/Buger';
 import BuildControls from '../../components/Buger/BuildControls/BuildControls';
 import Modal from '../../components/UI/Modal/Modal';
 import OrderSummary from '../../components/Buger/OrderSummary/OrderSummary';
+import axios from '../../axios-orders';
+import Spinner from '../../components/UI/Spinner/Spinner';
+import withErrorHandler from '../../hoc/withErrorHandler/withErrorHandler';
 
 const INGREDIENT_PRICES = {
   salad: 0.2,
@@ -15,15 +18,17 @@ const INGREDIENT_PRICES = {
 class BugerBuilder extends Component {
 
   state = {
-    ingredients: {
-      salad: 0,
-      bacon: 0,
-      cheese: 0,
-      meat: 0
-    },
+    ingredients: null,
     totalPrice: 2,
     purchasable: false,
-    showModal: false
+    showModal: false,
+    loading: false
+  }
+
+  componentDidMount() {
+    axios.get('https://my-burger-builder-2020.firebaseio.com/ingredients.json')
+      .then(res => this.setState({ ingredients: res.data }))
+      .catch(e => console.log(e))
   }
 
   updatePurchase() {
@@ -58,8 +63,29 @@ class BugerBuilder extends Component {
 
   toggleModal = () => {
     this.setState({
-      showModal: !this.state.showModal 
+      showModal: !this.state.showModal
     });
+  }
+
+  purchaseContinueHandler = () => {
+    this.setState({ loading: true });
+    const order = {
+      ingredients: this.state.ingredients,
+      price: this.state.totalPrice.toFixed(2),
+      customer: {
+        name: 'Charitha G',
+        address: {
+          street: 'My street',
+          zipCode: '10300',
+          country: 'Sri Lanka'
+        },
+        email: 'charitha@email.com',
+        deliveryMothod: 'fastest'
+      }
+    }
+    axios.post('/orders.json', order)
+      .then(res => this.setState({ loading: false, showModal: false }))
+      .catch(e => this.setState({ loading: false, showModal: false }));
   }
 
   render() {
@@ -68,12 +94,13 @@ class BugerBuilder extends Component {
     for (let key in disabledInfo) {
       disabledInfo[key] = disabledInfo[key] <= 0
     }
-    
-    return (
-      <Auxi>
-        <Modal show={this.state.showModal} modalClosed={this.toggleModal}>
-          <OrderSummary ingredients={this.state.ingredients} modalClosed={this.toggleModal} />
-        </Modal>
+
+    let orderSummary = null
+
+    let burger = <Spinner />
+
+    if (this.state.ingredients) {
+      burger = <Auxi>
         <Burger ingredients={this.state.ingredients} />
         <BuildControls
           disabledInfo={disabledInfo}
@@ -82,10 +109,28 @@ class BugerBuilder extends Component {
           price={this.state.totalPrice}
           purchasable={this.state.purchasable}
           order={this.toggleModal}
-        />
+        /></Auxi>
+
+      orderSummary = <OrderSummary
+        totalPrice={this.state.totalPrice}
+        ingredients={this.state.ingredients}
+        modalClosed={this.toggleModal}
+        purchaseContinue={this.purchaseContinueHandler} />
+    }
+
+    if (this.state.loading) {
+      orderSummary = <Spinner />
+    }
+
+    return (
+      <Auxi>
+        <Modal show={this.state.showModal} modalClosed={this.toggleModal}>
+          {orderSummary}
+        </Modal>
+        {burger}
       </Auxi>
     );
   }
 }
 
-export default BugerBuilder;
+export default withErrorHandler(BugerBuilder, axios);
