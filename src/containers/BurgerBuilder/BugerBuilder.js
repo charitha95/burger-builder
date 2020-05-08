@@ -26,6 +26,7 @@ class BugerBuilder extends Component {
   }
 
   componentDidMount() {
+    console.log(this.props)
     axios.get('https://my-burger-builder-2020.firebaseio.com/ingredients.json')
       .then(res => this.setState({ ingredients: res.data }))
       .catch(e => console.log(e))
@@ -68,24 +69,25 @@ class BugerBuilder extends Component {
   }
 
   purchaseContinueHandler = () => {
-    this.setState({ loading: true });
-    const order = {
-      ingredients: this.state.ingredients,
-      price: this.state.totalPrice.toFixed(2),
-      customer: {
-        name: 'Charitha G',
-        address: {
-          street: 'My street',
-          zipCode: '10300',
-          country: 'Sri Lanka'
-        },
-        email: 'charitha@email.com',
-        deliveryMothod: 'fastest'
-      }
-    }
-    axios.post('/orders.json', order)
-      .then(res => this.setState({ loading: false, showModal: false }))
-      .catch(e => this.setState({ loading: false, showModal: false }));
+    // this.setState({ loading: true });
+    // const order = {
+    //   ingredients: this.state.ingredients,
+    //   price: this.state.totalPrice.toFixed(2),
+    //   customer: {
+    //     name: 'Charitha G',
+    //     address: {
+    //       street: 'My street',
+    //       zipCode: '10300',
+    //       country: 'Sri Lanka'
+    //     },
+    //     email: 'charitha@email.com',
+    //     deliveryMothod: 'fastest'
+    //   }
+    // }
+    // axios.post('/orders.json', order)
+    //   .then(res => this.setState({ loading: false, showModal: false }))
+    //   .catch(e => this.setState({ loading: false, showModal: false }));
+    this.props.history.push('/checkout')
   }
 
   render() {
